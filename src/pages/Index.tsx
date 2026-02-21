@@ -5,13 +5,14 @@ import StatCard from "@/components/dashboard/StatCard";
 import CampaignPanel from "@/components/dashboard/CampaignPanel";
 import CampaignHistory from "@/components/dashboard/CampaignHistory";
 import CustomersTable from "@/components/dashboard/CustomersTable";
-import type { Customer } from "@/types/customer";
+import type { Customer, CampaignHistoryItem } from "@/types/customer";
 
 const API_URL = "https://n8n.srv1302157.hstgr.cloud/webhook/customers-campagin";
 
 const Index = () => {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
+  const [history, setHistory] = useState<CampaignHistoryItem[]>([]);
   const { toast } = useToast();
 
   const fetchCustomers = useCallback(async () => {
@@ -34,40 +35,43 @@ const Index = () => {
 
   const count = (segment: string) => customers.filter((c) => c.segment === segment).length;
 
+  const customerCounts: Record<string, number> = {
+    VIP: count("VIP"),
+    ACTIVE: count("ACTIVE"),
+    SLEEPING: count("SLEEPING"),
+    LOST: count("LOST"),
+  };
+
+  const handleCampaignSent = (item: CampaignHistoryItem) => {
+    setHistory((prev) => [item, ...prev]);
+  };
+
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-20">
-        <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
+      <header className="border-b border-border bg-card/60 backdrop-blur-sm sticky top-0 z-20">
+        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/15">
               <Megaphone className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-foreground">Marketing Campaign Dashboard</h1>
-              <p className="text-sm text-muted-foreground">Send WhatsApp campaigns to your customer segments</p>
+              <h1 className="text-lg font-bold text-foreground">Marketing Campaign Dashboard</h1>
+              <p className="text-xs text-muted-foreground">Send WhatsApp campaigns to your customer segments</p>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Content */}
-      <main className="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
-        {/* Stats */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4" style={{ animationDelay: "0.1s" }}>
-          <StatCard title="VIP Customers" count={count("VIP")} variant="vip" loading={loading} />
-          <StatCard title="Active Customers" count={count("ACTIVE")} variant="active" loading={loading} />
-          <StatCard title="Sleeping Customers" count={count("SLEEPING")} variant="sleeping" loading={loading} />
-          <StatCard title="Lost Customers" count={count("LOST")} variant="lost" loading={loading} />
+      <main className="mx-auto max-w-7xl space-y-5 px-4 py-5 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <StatCard title="VIP Customers" count={customerCounts.VIP} variant="vip" loading={loading} />
+          <StatCard title="Active Customers" count={customerCounts.ACTIVE} variant="active" loading={loading} />
+          <StatCard title="Sleeping Customers" count={customerCounts.SLEEPING} variant="sleeping" loading={loading} />
+          <StatCard title="Lost Customers" count={customerCounts.LOST} variant="lost" loading={loading} />
         </div>
 
-        {/* Campaign Panel */}
-        <CampaignPanel />
-
-        {/* Campaign History */}
-        <CampaignHistory />
-
-        {/* Customers */}
+        <CampaignPanel onCampaignSent={handleCampaignSent} customerCounts={customerCounts} />
+        <CampaignHistory history={history} />
         <CustomersTable customers={customers} loading={loading} onRefresh={fetchCustomers} />
       </main>
     </div>

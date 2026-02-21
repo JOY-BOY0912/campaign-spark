@@ -58,6 +58,17 @@ export default {
           DEFAULT: "hsl(var(--warning))",
           foreground: "hsl(var(--warning-foreground))",
         },
+        amber: {
+          400: "#fbbf24",
+          500: "#f59e0b",
+        },
+        emerald: {
+          400: "#34d399",
+          500: "#10b981",
+        },
+        orange: {
+          400: "#fb923c",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",

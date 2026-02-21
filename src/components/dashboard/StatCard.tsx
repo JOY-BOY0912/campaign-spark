@@ -7,41 +7,29 @@ interface StatCardProps {
   loading?: boolean;
 }
 
-const icons = {
-  vip: Crown,
-  active: Users,
-  sleeping: Moon,
-  lost: UserX,
-};
-
-const gradients = {
-  vip: "gradient-vip",
-  active: "gradient-active",
-  sleeping: "gradient-sleeping",
-  lost: "gradient-lost",
+const config = {
+  vip: { icon: Crown, bg: "bg-amber-500/15", text: "text-amber-500" },
+  active: { icon: Users, bg: "bg-emerald-500/15", text: "text-emerald-500" },
+  sleeping: { icon: Moon, bg: "bg-orange-400/15", text: "text-orange-400" },
+  lost: { icon: UserX, bg: "bg-red-500/15", text: "text-red-500" },
 };
 
 const StatCard = ({ title, count, variant, loading }: StatCardProps) => {
-  const Icon = icons[variant];
+  const { icon: Icon, bg, text } = config[variant];
 
   return (
-    <div className="group relative overflow-hidden rounded-xl border border-border bg-card p-6 shadow-card transition-all duration-300 hover:scale-[1.02] hover:shadow-glow hover:border-primary/30">
-      <div className="flex items-center justify-between">
-        <div className="space-y-2">
-          <p className="text-sm font-medium text-muted-foreground">{title}</p>
-          {loading ? (
-            <div className="h-9 w-16 animate-pulse rounded-md bg-muted" />
-          ) : (
-            <p className="text-3xl font-bold text-foreground animate-count-up">
-              {count}
-            </p>
-          )}
-        </div>
-        <div className={`flex h-12 w-12 items-center justify-center rounded-lg ${gradients[variant]} opacity-90`}>
-          <Icon className="h-6 w-6 text-primary-foreground" />
-        </div>
+    <div className="flex items-center gap-4 rounded-xl border border-border bg-card px-5 py-4 shadow-card">
+      <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${bg}`}>
+        <Icon className={`h-5 w-5 ${text}`} />
       </div>
-      <div className={`absolute bottom-0 left-0 h-1 w-full ${gradients[variant]} opacity-60 transition-opacity group-hover:opacity-100`} />
+      <div>
+        <p className="text-sm text-muted-foreground">{title}</p>
+        {loading ? (
+          <div className="mt-1 h-7 w-12 animate-pulse rounded bg-muted" />
+        ) : (
+          <p className="text-2xl font-bold text-foreground">{count}</p>
+        )}
+      </div>
     </div>
   );
 };
